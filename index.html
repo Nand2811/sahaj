@@ -1,1007 +1,345 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
-
-<meta charset="UTF-8">
-
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Sahaj Enterprise</title>
-
-<link rel="icon" href="logo.png">
-
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
-<link
-rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-/>
-
-<style>
-
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-}
-
-:root{
-  --primary:#fbc02d;
-  --accent:#ff6f00;
-  --bg:#fffde7;
-  --text:#2c2c2c;
-}
-
-html{
-  scroll-behavior:smooth;
-}
-
-body{
-  font-family:'Poppins',sans-serif;
-  background:var(--bg);
-  color:var(--text);
-  transition:0.4s;
-  overflow-x:hidden;
-}
-
-body.dark-mode{
-  background:#121212;
-  color:#f0f0f0;
-}
-
-/* Loader */
-
-#loader{
-  position:fixed;
-  top:0;
-  left:0;
-  width:100%;
-  height:100%;
-  background:#fffde7;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  z-index:9999;
-}
-
-.loader-circle{
-  width:60px;
-  height:60px;
-  border:6px solid #fbc02d;
-  border-top:6px solid #ff6f00;
-  border-radius:50%;
-  animation:spin 1s linear infinite;
-}
-
-@keyframes spin{
-  100%{
-    transform:rotate(360deg);
-  }
-}
-
-/* Navbar */
-
-.navbar{
-  background:linear-gradient(90deg,#fdd835,#ffb300);
-  padding:18px 30px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  position:sticky;
-  top:0;
-  z-index:1000;
-  flex-wrap:wrap;
-  box-shadow:0 5px 15px rgba(0,0,0,0.1);
-}
-
-body.dark-mode .navbar{
-  background:linear-gradient(90deg,#222,#333);
-}
-
-.logo{
-  font-size:1.7rem;
-  font-weight:700;
-}
-
-.nav-links{
-  display:flex;
-  align-items:center;
-  gap:20px;
-  transition:0.4s;
-}
-
-.nav-links a{
-  text-decoration:none;
-  color:#000;
-  font-weight:600;
-  transition:0.3s;
-  position:relative;
-}
-
-.nav-links a::after{
-  content:"";
-  position:absolute;
-  left:0;
-  bottom:-5px;
-  width:0;
-  height:2px;
-  background:#fff;
-  transition:0.3s;
-}
-
-.nav-links a:hover::after{
-  width:100%;
-}
-
-body.dark-mode .nav-links a{
-  color:#fff;
-}
-
-/* Toggle */
-
-.toggle-container{
-  display:flex;
-  align-items:center;
-}
-
-#darkModeToggle{
-  display:none;
-}
-
-.toggle-label{
-  width:75px;
-  height:38px;
-  background:linear-gradient(135deg,#ffd54f,#ffb300);
-  border-radius:50px;
-  position:relative;
-  cursor:pointer;
-  transition:0.4s;
-  box-shadow:0 4px 10px rgba(0,0,0,0.2);
-}
-
-.toggle-ball{
-  position:absolute;
-  width:30px;
-  height:30px;
-  border-radius:50%;
-  background:#fff;
-  top:4px;
-  left:4px;
-  transition:0.4s;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:16px;
-}
-
-.toggle-ball::before{
-  content:"☀️";
-}
-
-#darkModeToggle:checked + .toggle-label{
-  background:linear-gradient(135deg,#232526,#414345);
-}
-
-#darkModeToggle:checked + .toggle-label .toggle-ball{
-  transform:translateX(37px);
-  background:#1e1e1e;
-}
-
-#darkModeToggle:checked + .toggle-label .toggle-ball::before{
-  content:"🌙";
-}
-
-/* Hamburger */
-
-.hamburger{
-  display:none;
-  flex-direction:column;
-  gap:5px;
-  cursor:pointer;
-}
-
-.hamburger div{
-  width:25px;
-  height:3px;
-  background:#000;
-  transition:0.3s;
-}
-
-body.dark-mode .hamburger div{
-  background:#fff;
-}
-
-/* Sections */
-
-section{
-  padding:90px 25px;
-}
-
-/* Typography */
-
-h2{
-  font-size:2.4rem;
-  margin-bottom:20px;
-  font-weight:700;
-}
-
-p{
-  line-height:1.8;
-}
-
-/* Hero */
-
-.hero{
-  text-align:center;
-  padding:130px 20px;
-  background:linear-gradient(to right,#fff8e1,#fffde7);
-}
-
-body.dark-mode .hero{
-  background:linear-gradient(to right,#1b1b1b,#121212);
-}
-
-.hero h2{
-  font-size:3rem;
-}
-
-.hero p{
-  font-size:1.2rem;
-  opacity:0.8;
-}
-
-/* Products */
-
-.product-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-  gap:25px;
-  margin-top:30px;
-}
-
-.product-card{
-  background:#fff;
-  padding:25px;
-  border-radius:18px;
-  box-shadow:0 8px 20px rgba(0,0,0,0.08);
-  transition:0.4s;
-  text-align:center;
-  font-weight:500;
-  opacity:0;
-  transform:translateY(50px);
-}
-
-.product-card.show{
-  opacity:1;
-  transform:translateY(0);
-}
-
-.product-card:hover{
-  transform:translateY(-10px);
-  box-shadow:0 12px 30px rgba(0,0,0,0.15);
-}
-
-body.dark-mode .product-card{
-  background:#1f1f1f;
-}
-
-/* Forms */
-
-form{
-  max-width:750px;
-  margin:auto;
-  background:#ffffffdd;
-  padding:40px;
-  border-radius:20px;
-  box-shadow:0 10px 25px rgba(0,0,0,0.1);
-}
-
-body.dark-mode form{
-  background:#1e1e1e;
-}
-
-label{
-  display:block;
-  margin-bottom:18px;
-  font-weight:500;
-}
-
-input,
-textarea,
-select{
-  width:100%;
-  padding:14px;
-  margin-top:8px;
-  border-radius:12px;
-  border:1px solid #ccc;
-  font-family:inherit;
-  font-size:15px;
-}
-
-body.dark-mode input,
-body.dark-mode textarea,
-body.dark-mode select{
-  background:#2a2a2a;
-  border:1px solid #555;
-  color:#fff;
-}
-
-textarea{
-  resize:none;
-}
-
-button{
-  padding:13px 22px;
-  border:none;
-  border-radius:30px;
-  background:var(--accent);
-  color:#fff;
-  font-weight:600;
-  cursor:pointer;
-  margin-top:10px;
-  transition:0.3s;
-  font-size:15px;
-}
-
-button:hover{
-  transform:scale(1.05);
-}
-
-/* Product Item */
-
-.product-item{
-  background:#fff;
-  border:1px dashed #ccc;
-  padding:18px;
-  border-radius:12px;
-  margin-bottom:15px;
-}
-
-body.dark-mode .product-item{
-  background:#2c2c2c;
-  border:1px dashed #555;
-}
-
-.remove-btn{
-  background:#d32f2f;
-}
-
-/* Footer */
-
-footer{
-  background:linear-gradient(90deg,#fdd835,#ffb300);
-  padding:50px 20px;
-  margin-top:40px;
-}
-
-body.dark-mode footer{
-  background:linear-gradient(90deg,#222,#333);
-}
-
-.footer-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-  gap:30px;
-  max-width:1200px;
-  margin:auto;
-}
-
-.footer-box h3{
-  margin-bottom:15px;
-}
-
-.footer-box p,
-.footer-box a{
-  line-height:2;
-  text-decoration:none;
-  color:inherit;
-}
-
-.footer-bottom{
-  text-align:center;
-  margin-top:35px;
-  padding-top:20px;
-  border-top:1px solid rgba(0,0,0,0.2);
-}
-
-/* Mobile */
-
-@media(max-width:768px){
-
-  .nav-links{
-    width:100%;
-    flex-direction:column;
-    overflow:hidden;
-    max-height:0;
-    opacity:0;
-    margin-top:10px;
-  }
-
-  .nav-links.active{
-    max-height:500px;
-    opacity:1;
-    padding:15px 0;
-  }
-
-  .hamburger{
-    display:flex;
-  }
-
-  .hero h2{
-    font-size:2rem;
-  }
-
-  h2{
-    font-size:2rem;
-  }
-
-}
-
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sahaj Enterprise | Premium Packaging Solutions</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <style>
+        :root {
+            --bg-body: #f8fafc; --bg-surface: #ffffff; --bg-surface-hover: #f1f5f9;
+            --bg-glass: rgba(254, 243, 199, 0.85); /* Premium Tinted Header Backing */
+            --bg-footer: linear-gradient(135deg, #0f172a, #1e293b); /* Rich Dark Slate Footer */
+            --text-primary: #0f172a; --text-secondary: #475569; --text-tertiary: #94a3b8;
+            --brand-primary: #f59e0b; --brand-primary-light: #fef3c7; --brand-accent: #ea580c;
+            --brand-gradient: linear-gradient(135deg, var(--brand-primary), var(--brand-accent));
+            --border-light: #e2e8f0; --border-focus: var(--brand-primary);
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.04); --shadow-md: 0 4px 12px -1px rgba(15, 23, 42, 0.04);
+            --shadow-lg: 0 20px 25px -5px rgba(15, 23, 42, 0.06); --shadow-glow: 0 10px 20px -3px rgba(245, 158, 11, 0.3);
+            --radius-sm: 10px; --radius-md: 18px; --radius-lg: 24px; --radius-full: 9999px;
+            --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1); --transition-bounce: 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        body.dark-mode {
+            --bg-body: #0b0f19; --bg-surface: #131c2e; --bg-surface-hover: #1e293b;
+            --bg-glass: rgba(19, 28, 46, 0.85); --bg-footer: #090d16;
+            --text-primary: #f8fafc; --text-secondary: #94a3b8; --text-tertiary: #64748b;
+            --brand-primary-light: rgba(245, 158, 11, 0.12); --border-light: #1e293b;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; scroll-padding-top: 95px; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg-body); color: var(--text-primary); transition: background var(--transition-fast), color var(--transition-fast); overflow-x: hidden; -webkit-font-smoothing: antialiased; }
+        h1, h2, h3, h4 { font-family: 'Outfit', sans-serif; font-weight: 700; color: var(--text-primary); }
+        .container { width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+        section { padding: 80px 0; position: relative; }
+        .section-header { text-align: center; margin-bottom: 45px; }
+        .section-header h2 { font-size: clamp(2rem, 4vw, 3rem); margin-bottom: 12px; }
+        .section-header p { color: var(--text-secondary); max-width: 580px; margin: 0 auto; }
+        .text-gradient { background: var(--brand-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: inline-block; }
+        
+        .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; padding: 14px 32px; border-radius: var(--radius-full); font-family: 'Outfit', sans-serif; font-weight: 600; cursor: pointer; transition: all var(--transition-fast); border: none; position: relative; overflow: hidden; z-index: 1; }
+        .btn-primary { background: var(--brand-gradient); color: #fff; box-shadow: var(--shadow-glow); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 24px -4px rgba(234, 88, 12, 0.4); }
+        .btn-outline { background: transparent; color: var(--text-primary); border: 2px solid var(--border-light); }
+        .btn-outline:hover { border-color: var(--brand-primary); color: var(--brand-primary); background: var(--brand-primary-light); }
+        .btn-full { width: 100%; }
+        .ripple { position: absolute; border-radius: 50%; transform: scale(0); animation: ripple-anim 550ms linear; background: rgba(255,255,255,0.25); pointer-events: none; }
+        @keyframes ripple-anim { to { transform: scale(4); opacity: 0; } }
+
+        .input-group { position: relative; margin-bottom: 20px; }
+        .input-control { width: 100%; padding: 16px 16px 14px; border: 2px solid var(--border-light); border-radius: var(--radius-sm); background: var(--bg-surface); color: var(--text-primary); font-size: 0.95rem; outline: none; transition: all var(--transition-fast); }
+        .input-control:focus { border-color: var(--border-focus); box-shadow: 0 0 0 4px var(--brand-primary-light); }
+        .input-label { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--text-tertiary); pointer-events: none; transition: all 0.2s cubic-bezier(0.4,0,0.2,1); background: var(--bg-surface); padding: 0 6px; }
+        .input-control:focus ~ .input-label, .input-control:not(:placeholder-shown) ~ .input-label { top: 0; font-size: 0.8rem; color: var(--brand-accent); font-weight: 600; }
+        select.input-control { appearance: none; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2.5' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E") no-repeat right 16px center / 14px var(--bg-surface); padding-right: 40px; }
+        textarea.input-control { min-height: 110px; resize: vertical; padding-top: 20px; }
+        textarea.input-control ~ .input-label { top: 24px; }
+        textarea.input-control:focus ~ .input-label, textarea.input-control:not(:placeholder-shown) ~ .input-label { top: 0; }
+
+        .toast-container { position: fixed; bottom: 24px; right: 24px; display: flex; flex-direction: column; gap: 10px; z-index: 9999; }
+        .toast { background: var(--bg-surface); color: var(--text-primary); padding: 14px 20px; border-radius: var(--radius-sm); box-shadow: var(--shadow-lg); display: flex; align-items: center; gap: 12px; border-left: 4px solid var(--brand-primary); transform: translateY(20px); opacity: 0; transition: opacity 0.3s, transform 0.3s var(--transition-bounce); font-weight: 500; }
+        .toast.show { transform: translateY(0); opacity: 1; }
+        .toast.success { border-left-color: #10b981; } .toast.success i { color: #10b981; }
+        .toast.error { border-left-color: #ef4444; } .toast.error i { color: #ef4444; }
+
+        .navbar { position: fixed; top: 0; left: 0; width: 100%; background: var(--bg-glass); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid var(--border-light); z-index: 1000; }
+        .navbar .container { display: flex; justify-content: space-between; align-items: center; height: 76px; }
+        .logo { font-family: 'Outfit', sans-serif; font-size: 1.45rem; font-weight: 800; color: var(--text-primary); text-decoration: none; display: flex; align-items: center; gap: 10px; }
+        .logo i { background: var(--brand-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 1.65rem; }
+        .nav-menu { display: flex; align-items: center; gap: 28px; }
+        .nav-link { text-decoration: none; color: var(--text-secondary); font-weight: 500; padding: 6px 2px; position: relative; }
+        .nav-link:hover, .nav-link.active { color: var(--brand-accent); }
+        .nav-link::after { content: ''; position: absolute; bottom: 0; left: 0; width: 0%; height: 2px; background: var(--brand-gradient); transition: width var(--transition-fast); }
+        .nav-link.active::after, .nav-link:hover::after { width: 100%; }
+        .theme-toggle { background: var(--bg-surface-hover); border: 1px solid var(--border-light); width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-primary); }
+        .hamburger { display: none; background: transparent; border: none; color: var(--text-primary); font-size: 1.35rem; cursor: pointer; }
+
+        .hero { min-height: 70vh; display: flex; align-items: center; padding-top: 76px; overflow: hidden; }
+        .hero-bg-shape { position: absolute; border-radius: 50%; filter: blur(120px); z-index: -1; opacity: 0.25; }
+        .shape-1 { width: clamp(200px, 40vw, 450px); height: clamp(200px, 40vw, 450px); background: var(--brand-primary); top: -50px; right: -50px; }
+        .shape-2 { width: clamp(150px, 30vw, 350px); height: clamp(150px, 30vw, 350px); background: var(--brand-accent); bottom: 0; left: -100px; }
+        .hero-content { max-width: 760px; margin: 0 auto; text-align: center; }
+        .hero-content h1 { font-size: clamp(2.25rem, 5vw, 4.25rem); margin-bottom: 20px; letter-spacing: -0.03em; }
+        .hero-content p { font-size: clamp(1rem, 2vw, 1.2rem); color: var(--text-secondary); max-width: 620px; margin: 0 auto; }
+
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
+        .product-card { background: var(--bg-surface); border: 1px solid var(--border-light); border-radius: var(--radius-md); padding: 28px 20px; text-align: center; transition: all 0.3s ease; }
+        .product-card:hover { transform: translateY(-5px); border-color: var(--brand-primary); box-shadow: var(--shadow-md); }
+        .product-icon { width: 60px; height: 60px; margin: 0 auto 20px; background: var(--brand-primary-light); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; font-size: 24px; color: var(--brand-accent); transition: all var(--transition-fast); }
+        .product-card:hover .product-icon { transform: scale(1.1); background: var(--brand-gradient); color: #fff; }
+
+        .form-wrapper { background: var(--bg-surface); border: 1px solid var(--border-light); border-radius: var(--radius-lg); padding: clamp(20px, 4vw, 40px); box-shadow: var(--shadow-md); max-width: 840px; margin: 0 auto; }
+        .dynamic-item { display: grid; grid-template-columns: 1fr 120px auto; gap: 16px; align-items: center; background: var(--bg-surface-hover); padding: 16px; border-radius: var(--radius-sm); margin-bottom: 14px; border: 1px solid var(--border-light); }
+        .dynamic-item .input-group { margin-bottom: 0; }
+        .btn-remove { width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; background: transparent; color: #ef4444; border: 1px solid var(--border-light); border-radius: var(--radius-sm); cursor: pointer; transition: all var(--transition-fast); }
+        .btn-remove:hover { background: rgba(239, 68, 68, 0.08); border-color: #ef4444; }
+        .form-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 28px; }
+
+        .footer { background: var(--bg-footer); border-top: 1px solid var(--border-light); padding: 70px 0 24px; color: #cbd5e1; }
+        .footer h3, .footer .logo, .footer .footer-title { color: #ffffff; }
+        .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 40px; margin-bottom: 50px; }
+        .footer-brand p { color: #94a3b8; max-width: 290px; }
+        .footer-links { list-style: none; } .footer-links li { margin-bottom: 10px; }
+        .footer-links a { color: #94a3b8; text-decoration: none; transition: all var(--transition-fast); display: inline-flex; align-items: center; gap: 8px; }
+        .footer-links a:hover { color: var(--brand-primary); transform: translateX(3px); }
+        .contact-list { list-style: none; } .contact-list li { display: flex; gap: 12px; color: #94a3b8; margin-bottom: 14px; }
+        .contact-list i { color: var(--brand-primary); margin-top: 4px; }
+        .footer-bottom { text-align: center; padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.1); color: #64748b; }
+
+        .reveal { opacity: 0; transform: translateY(20px); transition: all 0.6s ease; }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+
+        @media (max-width: 992px) {
+            .form-actions { grid-template-columns: 1fr; }
+            .dynamic-item { grid-template-columns: 1fr; padding: 20px; }
+            .btn-remove { width: 100%; height: 44px; }
+        }
+        @media (max-width: 768px) {
+            section { padding: 60px 0; }
+            .hamburger { display: block; }
+            .nav-menu { position: fixed; top: 76px; left: 0; width: 100%; background: var(--bg-surface); flex-direction: column; padding: 0; gap: 0; clip-path: polygon(0 0, 100% 0, 100% 0, 0 0); transition: clip-path 0.3s ease-in-out; box-shadow: var(--shadow-lg); }
+            .nav-menu.is-active { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
+            .nav-link { width: 100%; padding: 16px 24px; border-bottom: 1px solid var(--border-light); }
+            .nav-link::after { display: none; }
+            .theme-toggle { margin: 16px 24px; width: calc(100% - 48px); border-radius: var(--radius-sm); }
+        }
+    </style>
 </head>
-
 <body>
-
-<!-- Loader -->
-
-<div id="loader">
-  <div class="loader-circle"></div>
-</div>
-
-<header class="navbar">
-
-  <div class="logo">
-    Sahaj Enterprise
-  </div>
-
-  <div class="nav-links" id="navLinks">
-
-    <a href="#home">
-      <i class="fa-solid fa-house"></i>
-      Home
-    </a>
-
-    <a href="#products">
-      <i class="fa-solid fa-box-open"></i>
-      Products
-    </a>
-
-    <a href="#purchase">
-      <i class="fa-solid fa-cart-shopping"></i>
-      Purchase
-    </a>
-
-    <a href="#contact">
-      <i class="fa-solid fa-phone"></i>
-      Contact
-    </a>
-
-    <div class="toggle-container">
-
-      <input type="checkbox" id="darkModeToggle">
-
-      <label for="darkModeToggle" class="toggle-label">
-        <span class="toggle-ball"></span>
-      </label>
-
-    </div>
-
-  </div>
-
-  <div class="hamburger" id="hamburger">
-    <div></div>
-    <div></div>
-    <div></div>
-  </div>
-
-</header>
-
-<!-- Hero -->
-
-<section id="home" class="hero">
-
-  <h2>Your Trusted Packaging Partner</h2>
-
-  <p>
-    Plastics • Biodegradable • Stationery • Packaging Solutions
-  </p>
-
-</section>
-
-<!-- Products -->
-
-<section id="products">
-
-  <h2 style="text-align:center;">Our Products</h2>
-
-  <div class="product-grid" id="productGrid"></div>
-
-</section>
-
-<!-- Purchase -->
-
-<section id="purchase">
-
-  <h2 style="text-align:center;">
-    Quotation Request
-  </h2>
-
-  <form>
-
-    <label>
-      Customer Name
-
-      <input
-      type="text"
-      id="pname"
-      placeholder="Enter Customer Name"
-      required>
-
-    </label>
-
-    <label>
-      Mobile Number
-
-      <input
-      type="tel"
-      id="mobile"
-      placeholder="Enter Mobile Number"
-      required>
-
-    </label>
-
-    <div id="productContainer"></div>
-
-    <button type="button" onclick="addProduct()">
-      ➕ Add Product
-    </button>
-
-    <button type="button" onclick="sendPurchaseToWhatsApp()">
-      📩 Quotation Request
-    </button>
-
-  </form>
-
-</section>
-
-<!-- Contact -->
-
-<section id="contact">
-
-  <h2 style="text-align:center;">
-    Contact Us
-  </h2>
-
-  <form onsubmit="sendContact(event)">
-
-    <label>
-      Name
-
-      <input
-      type="text"
-      id="cname"
-      placeholder="Enter Your Name"
-      required>
-
-    </label>
-
-    <label>
-      Mobile
-
-      <input
-      type="tel"
-      id="cmobile"
-      placeholder="Enter Mobile Number"
-      required>
-
-    </label>
-
-    <label>
-      Email
-
-      <input
-      type="email"
-      id="cemail"
-      placeholder="Enter Email Address"
-      required>
-
-    </label>
-
-    <label>
-      Message
-
-      <textarea
-      id="cmessage"
-      placeholder="Write Your Message"
-      required></textarea>
-
-    </label>
-
-    <button type="submit">
-      📨 Send Inquiry
-    </button>
-
-  </form>
-
-</section>
-
-<!-- Footer -->
-
-<footer>
-
-  <div class="footer-grid">
-
-    <div class="footer-box">
-
-      <h3>
-        <i class="fa-solid fa-building"></i>
-        Sahaj Enterprise
-      </h3>
-
-      <p>
-        Trusted supplier of packaging,
-        biodegradable and stationery products.
-      </p>
-
-    </div>
-
-    <div class="footer-box">
-
-      <h3>
-        <i class="fa-solid fa-link"></i>
-        Quick Links
-      </h3>
-
-      <p><a href="#home">Home</a></p>
-      <p><a href="#products">Products</a></p>
-      <p><a href="#purchase">Purchase</a></p>
-      <p><a href="#contact">Contact</a></p>
-
-    </div>
-
-    <div class="footer-box">
-
-      <h3>
-        <i class="fa-solid fa-address-card"></i>
-        Contact Info
-      </h3>
-
-      <p>
-        <i class="fa-solid fa-location-dot"></i>
-
-        <a
-        href="https://www.google.com/maps?q=22.235291922195938,70.6784906555683"
-        target="_blank">
-
-        Krishna Complex, GIDC Metoda
-
-        </a>
-
-      </p>
-
-      <p>
-        <i class="fa-solid fa-phone"></i>
-        Paresh: 99799 50667
-      </p>
-
-      <p>
-        <i class="fa-solid fa-phone"></i>
-        Kuldip: 95862 70971
-      </p>
-
-      <p>
-        <i class="fa-brands fa-whatsapp"></i>
-        WhatsApp Available
-      </p>
-
-    </div>
-
-  </div>
-
-  <div class="footer-bottom">
-
-    © 2026 Sahaj Enterprise. All Rights Reserved.
-
-  </div>
-
-</footer>
-
-<script>
-
-/* WhatsApp Number */
-
-const WHATSAPP_NUMBER = "919016655358";
-
-/* Loader */
-
-window.addEventListener("load", () => {
-
-  document.getElementById("loader").style.display = "none";
-
-});
-
-/* Products */
-
-const PRODUCTS = [
-
-  "PVC સીન્ક / PVC Sink",
-  "LD સીન્ક / LD Sink",
-  "LD સ્ટ્રેચ ફીલ્મ / LD Stretch Film",
-  "PP બેગ / PP Bag",
-  "LD બેગ / LD Bag",
-  "HM બેગ / HM Bag",
-  "LL બેગ / LL Bag",
-  "બબલ રોલ / Bubble Roll",
-  "A4 પ્રિન્ટ પેપર / A4 Print Paper",
-  "BOPP ટેપ / BOPP Tape",
-  "BOPP બેગ / BOPP Bag",
-  "LD રોલ / LD Roll",
-  "બોક્સ પટ્ટી / Box Tape",
-  "ફાઈબર / Fiber",
-  "તાલપત્રી / Palm Leaf Plate",
-  "ફોમ રોલ / Foam Roll",
-  "પેપર કપ / Paper Cup",
-  "પેપર બેગ / Paper Bag"
-
-];
-
-const productGrid =
-document.getElementById("productGrid");
-
-const productContainer =
-document.getElementById("productContainer");
-
-/* Product Cards */
-
-PRODUCTS.forEach((product,index) => {
-
-  const card =
-  document.createElement("div");
-
-  card.className = "product-card";
-
-  card.innerHTML = `
-    <i class="fa-solid fa-box" style="font-size:35px;color:#ff6f00;margin-bottom:15px;"></i>
-    <h3>${product}</h3>
-  `;
-
-  productGrid.appendChild(card);
-
-  setTimeout(() => {
-
-    card.classList.add("show");
-
-  }, index * 120);
-
-});
-
-/* Create Select */
-
-function createSelect(){
-
-  const select =
-  document.createElement("select");
-
-  select.required = true;
-
-  select.innerHTML =
-  `<option value="">-- Select Product --</option>`;
-
-  PRODUCTS.forEach(product => {
-
-    const option =
-    document.createElement("option");
-
-    option.value = product;
-
-    option.textContent = product;
-
-    select.appendChild(option);
-
-  });
-
-  return select;
-
-}
-
-/* Add Product */
-
-function addProduct(){
-
-  const div =
-  document.createElement("div");
-
-  div.className = "product-item";
-
-  div.appendChild(createSelect());
-
-  const qty =
-  document.createElement("label");
-
-  qty.innerHTML = `
-    Quantity
-    <input type="number" min="1" value="1">
-  `;
-
-  div.appendChild(qty);
-
-  const removeBtn =
-  document.createElement("button");
-
-  removeBtn.type = "button";
-
-  removeBtn.className = "remove-btn";
-
-  removeBtn.textContent = "Remove";
-
-  removeBtn.onclick = () => div.remove();
-
-  div.appendChild(removeBtn);
-
-  productContainer.appendChild(div);
-
-}
-
-/* Send WhatsApp */
-
-function sendPurchaseToWhatsApp(){
-
-  const name =
-  document.getElementById("pname").value.trim();
-
-  const mobile =
-  document.getElementById("mobile").value.trim();
-
-  if(name === "" || mobile.length !== 10){
-
-    alert("Enter valid Name & 10 digit Mobile Number");
-
-    return;
-
-  }
-
-  let msg =
-  `*Quotation Request*%0A%0A`;
-
-  msg +=
-  `Customer Name: ${name}%0A`;
-
-  msg +=
-  `Mobile Number: ${mobile}%0A%0A`;
-
-  msg +=
-  `*Product List*%0A`;
-
-  let hasProduct = false;
-
-  document
-  .querySelectorAll(".product-item")
-  .forEach(item => {
-
-    const product =
-    item.querySelector("select").value;
-
-    const qty =
-    item.querySelector("input").value;
-
-    if(product){
-
-      hasProduct = true;
-
-      msg +=
-      `• ${product} - Qty: ${qty}%0A`;
-
-    }
-
-  });
-
-  if(!hasProduct){
-
-    alert("Please Add Product");
-
-    return;
-
-  }
-
-  const url =
-  `https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`;
-
-  window.open(url,"_blank");
-
-}
-
-/* Contact Form */
-
-function sendContact(e){
-
-  e.preventDefault();
-
-  let msg =
-  `*New Inquiry*%0A%0A`;
-
-  msg +=
-  `Name: ${cname.value}%0A`;
-
-  msg +=
-  `Mobile: ${cmobile.value}%0A`;
-
-  msg +=
-  `Email: ${cemail.value}%0A`;
-
-  msg +=
-  `Message: ${cmessage.value}`;
-
-  const url =
-  `https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`;
-
-  window.open(url,"_blank");
-
-  e.target.reset();
-
-}
-
-/* Dark Mode */
-
-const toggle =
-document.getElementById("darkModeToggle");
-
-if(localStorage.getItem("darkMode") === "enabled"){
-
-  document.body.classList.add("dark-mode");
-
-  toggle.checked = true;
-
-}
-
-toggle.addEventListener("change", () => {
-
-  document.body.classList.toggle("dark-mode");
-
-  if(document.body.classList.contains("dark-mode")){
-
-    localStorage.setItem("darkMode","enabled");
-
-  }else{
-
-    localStorage.setItem("darkMode","disabled");
-
-  }
-
-});
-
-/* Hamburger */
-
-const hamburger =
-document.getElementById("hamburger");
-
-const navLinks =
-document.getElementById("navLinks");
-
-hamburger.addEventListener("click", () => {
-
-  navLinks.classList.toggle("active");
-
-});
-
-/* Auto Close Menu */
-
-document
-.querySelectorAll(".nav-links a")
-.forEach(link => {
-
-  link.addEventListener("click", () => {
-
-    if(window.innerWidth <= 768){
-
-      navLinks.classList.remove("active");
-
-    }
-
-  });
-
-});
-
-</script>
-
+    <div class="toast-container" id="toastContainer"></div>
+    <nav class="navbar">
+        <div class="container">
+            <a href="#home" class="logo"><i class="fa-solid fa-cube"></i>Sahaj Enterprise</a>
+            <button class="hamburger" id="hamburgerBtn" aria-label="Toggle Navigation"><i class="fa-solid fa-bars-staggered"></i></button>
+            <div class="nav-menu" id="navMenu">
+                <a href="#home" class="nav-link active">Home</a>
+                <a href="#products" class="nav-link">Products</a>
+                <a href="#quotation" class="nav-link">Quotation</a>
+                <a href="#contact" class="nav-link">Contact</a>
+                <button class="theme-toggle" id="themeToggleBtn" aria-label="Toggle Dark Mode"><i class="fa-solid fa-moon"></i></button>
+            </div>
+        </div>
+    </nav>
+
+    <section id="home" class="hero">
+        <div class="hero-bg-shape shape-1"></div><div class="hero-bg-shape shape-2"></div>
+        <div class="container"><div class="hero-content">
+            <h1>Premium Packaging <br><span class="text-gradient">Solutions for Your Business</span></h1>
+            <p>From high-grade industrial plastics to eco-friendly biodegradable materials, we provide comprehensive packaging supplies tailored to your enterprise needs.</p>
+        </div></div>
+    </section>
+
+    <section id="products">
+        <div class="container">
+            <div class="section-header reveal">
+                <h2>Our <span class="text-gradient">Products</span></h2>
+                <p>Browse our extensive range of packaging materials designed for durability, safety, and presentation.</p>
+            </div>
+            <div class="product-grid" id="productGrid"></div>
+        </div>
+    </section>
+
+    <section id="quotation">
+        <div class="container">
+            <div class="section-header reveal">
+                <h2>Request a <span class="text-gradient">Quotation</span></h2>
+                <p>Build your order below and we will send you a customized quotation instantly via WhatsApp.</p>
+            </div>
+            <div class="form-wrapper reveal">
+                <form id="quoteForm">
+                    <div class="input-group">
+                        <input type="text" id="customerName" class="input-control" placeholder=" " required>
+                        <label class="input-label">Company / Customer Name *</label>
+                    </div>
+                    <div class="input-group">
+                        <input type="tel" id="mobileNumber" class="input-control" placeholder=" " pattern="[0-9]{10}" maxlength="10" required>
+                        <label class="input-label">10-Digit Mobile Number *</label>
+                    </div>
+                    <h3 style="margin: 28px 0 14px; font-size: 1.15rem;">Order Items</h3>
+                    <div id="dynamicProductContainer"></div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-outline btn-full" onclick="addFormRow()"><i class="fa-solid fa-plus"></i> Add Product Item</button>
+                        <button type="button" class="btn btn-primary btn-full" onclick="generateQuote()"><i class="fa-brands fa-whatsapp"></i> Get Quote via WhatsApp</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact">
+        <div class="container">
+            <div class="section-header reveal">
+                <h2>Get in <span class="text-gradient">Touch</span></h2>
+                <p>Have questions? Need a custom packaging solution? Drop us a message.</p>
+            </div>
+            <div class="form-wrapper reveal">
+                <form id="contactForm" onsubmit="sendContactMessage(event)">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px;">
+                        <div class="input-group">
+                            <input type="text" id="contactName" class="input-control" placeholder=" " required>
+                            <label class="input-label">Your Name *</label>
+                        </div>
+                        <div class="input-group">
+                            <input type="tel" id="contactMobile" class="input-control" placeholder=" " pattern="[0-9]{10}" maxlength="10" required>
+                            <label class="input-label">Mobile Number *</label>
+                        </div>
+                    </div>
+                    <div class="input-group"><input type="email" id="contactEmail" class="input-control" placeholder=" "><label class="input-label">Email Address (Optional)</label></div>
+                    <div class="input-group"><textarea id="contactMessage" class="input-control" placeholder=" " required></textarea><label class="input-label">Your Message *</label></div>
+                    <button type="submit" class="btn btn-primary"><i class="fa-solid fa-paper-plane"></i> Send Inquiry</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <a href="#" class="logo"><i class="fa-solid fa-cube"></i> Sahaj Enterprise</a>
+                    <p>Your trusted partner for premium, durable, and sustainable packaging materials across India.</p>
+                </div>
+                <div>
+                    <h3 class="footer-title">Quick Links</h3>
+                    <ul class="footer-links">
+                        <li><a href="#home"><i class="fa-solid fa-chevron-right" style="font-size:0.7rem"></i> Home</a></li>
+                        <li><a href="#products"><i class="fa-solid fa-chevron-right" style="font-size:0.7rem"></i> Products</a></li>
+                        <li><a href="#quotation"><i class="fa-solid fa-chevron-right" style="font-size:0.7rem"></i> Request Quote</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="footer-title">Contact Us</h3>
+                    <ul class="contact-list">
+                        <li><i class="fa-solid fa-location-dot"></i><span>Krishna Complex, GIDC Metoda, <br>Rajkot, Gujarat</span></li>
+                        <li><i class="fa-solid fa-phone"></i><span>Paresh: +91 99799 50667<br>Kuldip: +91 95862 70971</span></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">&copy; <span id="currentYear"></span> Sahaj Enterprise. Designed for Excellence.</div>
+        </div>
+    </footer>
+
+    <script>
+        const WHATSAPP_NUMBER = "919016655358";
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+        const PRODUCTS = [
+            { name: "PVC સીન્ક / PVC Sink" }, { name: "LD સીન્ક / LD Sink" }, { name: "LD સ્ટ્રેચ ફીલ્મ / LD Stretch Film" },
+            { name: "PP બેગ / PP Bag" }, { name: "LD બેગ / LD Bag" }, { name: "HM બેગ / HM Bag" },
+            { name: "LL બેગ / LL Bag" }, { name: "બબલ રોલ / Bubble Roll" }, { name: "A4 પ્રિન્ટ પેપર / A4 Print Paper" },
+            { name: "BOPP ટેપ / BOPP Tape" }, { name: "BOPP બેગ / BOPP Bag" }, { name: "LD રોલ / LD Roll" },
+            { name: "બોક્સ પટ્ટી / Box Tape" }, { name: "ફાઈબર / Fiber" }, { name: "તાલપત્રી / Palm Leaf Plate" },
+            { name: "ફોમ રોલ / Foam Roll" }, { name: "પેપર કપ / Paper Cup" }, { name: "પેપર બેગ / Paper Bag" }
+        ];
+
+        function showToast(m, t = 'error') {
+            const c = document.getElementById('toastContainer'), e = document.createElement('div');
+            e.className = `toast ${t}`;
+            e.innerHTML = `<i class="fa-solid ${t==='success'?'fa-circle-check':'fa-circle-exclamation'}"></i> <span>${m}</span>`;
+            c.appendChild(e);
+            requestAnimationFrame(() => setTimeout(() => e.classList.add('show'), 10));
+            setTimeout(() => { e.classList.remove('show'); setTimeout(() => e.remove(), 300); }, 3500);
+        }
+
+        document.querySelectorAll('.btn').forEach(b => {
+            b.addEventListener('click', function(e) {
+                const r = this.getBoundingClientRect(), s = Math.max(r.width, r.height) * 2, p = document.createElement('span');
+                p.className = 'ripple'; p.style.width = p.style.height = `${s}px`;
+                p.style.left = `${e.clientX - r.left}px`; p.style.top = `${e.clientY - r.top}px`;
+                p.style.marginLeft = p.style.marginTop = `-${s/2}px`; this.appendChild(p);
+                setTimeout(() => p.remove(), 550);
+            });
+        });
+
+        const toggle = document.getElementById('themeToggleBtn'), icon = toggle.querySelector('i');
+        function setTheme(d) {
+            document.body.classList.toggle('dark-mode', d);
+            icon.className = d ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+            localStorage.setItem('theme', d ? 'dark' : 'light');
+        }
+        setTheme(localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches));
+        toggle.addEventListener('click', () => setTheme(!document.body.classList.contains('dark-mode')));
+
+        const burger = document.getElementById('hamburgerBtn'), menu = document.getElementById('navMenu');
+        burger.addEventListener('click', () => {
+            menu.classList.toggle('is-active');
+            burger.querySelector('i').className = menu.classList.contains('is-active') ? 'fa-solid fa-xmark' : 'fa-solid fa-bars-staggered';
+        });
+        document.querySelectorAll('.nav-link').forEach(l => l.addEventListener('click', () => {
+            if(window.innerWidth <= 768) { menu.classList.remove('is-active'); burger.querySelector('i').className = 'fa-solid fa-bars-staggered'; }
+        }));
+
+        window.addEventListener('scroll', () => {
+            let curr = ''; document.querySelectorAll('section').forEach(s => { if ((window.scrollY + 160) >= s.offsetTop) curr = s.getAttribute('id'); });
+            document.querySelectorAll('.nav-link').forEach(l => { l.classList.toggle('active', l.getAttribute('href') === `#${curr}`); });
+        }, { passive: true });
+
+        const revealObs = new IntersectionObserver(entries => entries.forEach(e => { if(e.isIntersecting) { e.target.classList.add('active'); revealObs.unobserve(e.target); } }), { threshold: 0.05 });
+        document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
+
+        const grid = document.getElementById('productGrid');
+        PRODUCTS.forEach(p => {
+            const card = document.createElement('div'); card.className = 'product-card reveal';
+            card.innerHTML = `<div class="product-icon"><i class="fa-solid fa-cube"></i></div><h3>${p.name.split(' / ')[0]}</h3><p style="font-size:0.85rem; color:var(--text-tertiary); margin-top:6px;">${p.name.split(' / ')[1]||''}</p>`;
+            grid.appendChild(card); revealObs.observe(card);
+        });
+
+        const container = document.getElementById('dynamicProductContainer');
+        function addFormRow() {
+            const row = document.createElement('div'); row.className = 'dynamic-item';
+            let opts = `<option value="" disabled selected>-- Select Product --</option>`;
+            PRODUCTS.forEach(p => opts += `<option value="${p.name}">${p.name}</option>`);
+            row.innerHTML = `<div class="input-group"><select class="input-control item-select" required>${opts}</select><label class="input-label">Product</label></div><div class="input-group"><input type="number" class="input-control item-qty" min="1" value="1" required><label class="input-label">Qty</label></div><button type="button" class="btn-remove" onclick="this.parentElement.remove()"><i class="fa-solid fa-trash-can"></i></button>`;
+            row.querySelector('.item-qty').addEventListener('keydown', e => { if (['-', '+', 'e', 'E', '.'].includes(e.key)) e.preventDefault(); });
+            container.appendChild(row);
+        }
+
+        function generateQuote() {
+            const n = document.getElementById('customerName').value.trim(), m = document.getElementById('mobileNumber').value.trim(), rows = container.querySelectorAll('.dynamic-item');
+            if(!n) return showToast("Please enter the Company / Customer Name.");
+            if(!/^\d{10}$/.test(m)) return showToast("Please enter a valid 10-digit mobile number.");
+            if(!rows.length) return showToast("Please add at least one item.");
+            let pList = "", v = true;
+            rows.forEach(r => {
+                const s = r.querySelector('.item-select'), q = r.querySelector('.item-qty');
+                if(!s.value) { s.style.borderColor = '#ef4444'; v = false; } else { s.style.borderColor = 'var(--border-light)'; pList += `📦 *${s.value}*\n   └── *Qty:* ${q.value}\n\n`; }
+            });
+            if(!v) return showToast("Please select products.");
+            let txt = `✨ *NEW QUOTATION REQUEST*\n=========================\n\n🏢 *Details:*\n• *Name:* ${n}\n• *Mobile:* ${m}\n\n📋 *Items:* \n-------------------------\n${pList}-------------------------\n🌐 _Sahaj Enterprise Portal_`;
+            window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(txt)}`, '_blank');
+            showToast("Opening WhatsApp...", "success");
+        }
+
+        function sendContactMessage(e) {
+            e.preventDefault();
+            const n = document.getElementById('contactName').value.trim(), m = document.getElementById('contactMobile').value.trim(), em = document.getElementById('contactEmail').value.trim(), msg = document.getElementById('contactMessage').value.trim();
+            if(!/^\d{10}$/.test(m)) return showToast("Please enter a valid mobile number.");
+            let txt = `📩 *NEW INQUIRY*\n=========================\n\n👤 *Sender:*\n• *Name:* ${n}\n• *Mobile:* ${m}\n${em?`• *Email:* ${em}\n`:''}\n💬 *Message:*\n"${msg}"\n\n🌐 _Sahaj Enterprise Portal_`;
+            window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(txt)}`, '_blank');
+            e.target.reset(); showToast("Opening WhatsApp...", "success");
+        }
+    </script>
 </body>
 </html>
