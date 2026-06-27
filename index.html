@@ -320,9 +320,49 @@
         }
         .product-card:hover .product-icon { transform: scale(1.1); background: var(--brand-gradient); color: #fff; }
         
-        .product-search-wrapper { max-width: 500px; margin: 0 auto 40px; position: relative; }
+        .product-search-wrapper { max-width: 500px; margin: 0 auto 20px; position: relative; }
         .product-search-wrapper i { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--text-tertiary); }
         .product-search-wrapper input { padding-left: 44px; }
+
+        /* Filter Pills Styling */
+        .filter-pill {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-light);
+            color: var(--text-secondary);
+            padding: 10px 22px;
+            border-radius: var(--radius-full);
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            font-family: 'Outfit', sans-serif;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: var(--shadow-sm);
+        }
+        .filter-pill:hover {
+            border-color: var(--brand-primary);
+            color: var(--brand-accent);
+            background: var(--brand-primary-light);
+            transform: translateY(-1px);
+        }
+        .filter-pill.active {
+            background: var(--brand-gradient);
+            color: #ffffff;
+            border-color: transparent;
+            box-shadow: var(--shadow-glow);
+        }
+
+        /* Stat Card Styling */
+        .stat-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .stat-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--brand-primary) !important;
+            box-shadow: var(--shadow-md) !important;
+        }
 
         .form-wrapper { 
             background: var(--bg-surface); 
@@ -512,6 +552,17 @@
                 <input type="text" id="productSearchInput" class="input-control" placeholder="Search products... (e.g. Bag, Tape, Roll)">
             </div>
 
+            <!-- Category Pills -->
+            <div class="category-filters reveal" id="categoryFiltersContainer" style="display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-bottom: 40px;">
+                <button class="filter-pill active" data-category="all"><i class="fa-solid fa-list"></i> All / બધા</button>
+                <button class="filter-pill" data-category="Bags"><i class="fa-solid fa-bag-shopping"></i> Bags / બેગ</button>
+                <button class="filter-pill" data-category="Rolls"><i class="fa-solid fa-scroll"></i> Rolls / રોલ</button>
+                <button class="filter-pill" data-category="Sink"><i class="fa-solid fa-box-open"></i> Sink / સીન્ક</button>
+                <button class="filter-pill" data-category="Tape"><i class="fa-solid fa-tape"></i> Tapes / પટ્ટી</button>
+                <button class="filter-pill" data-category="Stationery"><i class="fa-solid fa-file-invoice"></i> Stationery / સ્ટેશનરી</button>
+                <button class="filter-pill" data-category="Other"><i class="fa-solid fa-boxes-packing"></i> Other / અન્ય</button>
+            </div>
+
             <div class="product-grid" id="productGrid"></div>
         </div>
     </section>
@@ -541,6 +592,17 @@
                     </h3>
                     
                     <div id="dynamicProductContainer"></div>
+                    
+                    <!-- Real-time Order Summary Panel -->
+                    <div id="quoteSummaryPanel" style="display: none; align-items: center; justify-content: space-between; padding: 14px 20px; background: var(--brand-primary-light); border-radius: var(--radius-sm); margin-top: 20px; border-left: 4px solid var(--brand-accent); font-family: 'Outfit', sans-serif;">
+                        <span style="font-weight: 700; color: var(--brand-accent); font-size: 0.9rem;">
+                            <i class="fa-solid fa-cart-flatbed" style="margin-right: 6px;"></i> Order Summary / ઓર્ડર સારાંશ
+                        </span>
+                        <div style="font-size: 0.9rem; font-weight: 700; color: var(--text-primary); display: flex; gap: 15px;">
+                            <span>Unique Products: <strong id="summaryUniqueCount" style="color: var(--brand-accent);">0</strong></span>
+                            <span>Total Qty: <strong id="summaryTotalQty" style="color: var(--brand-accent);">0</strong></span>
+                        </div>
+                    </div>
                     
                     <div class="form-actions">
                         <button type="button" class="btn btn-outline btn-full" id="addFormRowBtn">
@@ -633,33 +695,43 @@
         
         // Products Database
         const PRODUCTS = [
-            { name: "PVC સીન્ક / PVC Sink" }, 
-            { name: "LD સીન્ક / LD Sink" }, 
-            { name: "LD સ્ટ્રેચ ફીલ્મ / LD Stretch Film" },
-            { name: "PP બેગ / PP Bag" }, 
-            { name: "LD બેગ / LD Bag" }, 
-            { name: "HM બેગ / HM Bag" },
-            { name: "LL બેગ / LL Bag" }, 
-            { name: "બબલ રોલ / Bubble Roll" }, 
-            { name: "A4 પ્રિન્ટ પેપર / A4 Print Paper" },
-            { name: "BOPP ટેપ / BOPP Tape" }, 
-            { name: "BOPP બેગ / BOPP Bag" }, 
-            { name: "LD રોલ / LD Roll" },
-            { name: "બોક્સ પટ્ટી / Box Tape" }, 
-            { name: "ફાઇલ / File" }, 
-            { name: "તાલપત્રી / Tadpatri" },
-            { name: "ફોમ રોલ / Foam Roll" }, 
-            { name: "પેપર કપ / Paper Cup" }, 
-            { name: "પેપર બેગ / Paper Bag" }
+            { name: "PVC સીન્ક / PVC Sink", category: "Sink" }, 
+            { name: "LD સીન્ક / LD Sink", category: "Sink" }, 
+            { name: "LD સ્ટ્રેચ ફીલ્મ / LD Stretch Film", category: "Rolls" },
+            { name: "PP બેગ / PP Bag", category: "Bags" }, 
+            { name: "LD બેગ / LD Bag", category: "Bags" }, 
+            { name: "HM બેગ / HM Bag", category: "Bags" },
+            { name: "LL બેગ / LL Bag", category: "Bags" }, 
+            { name: "બબલ રોલ / Bubble Roll", category: "Rolls" }, 
+            { name: "A4 પ્રિન્ટ પેપર / A4 Print Paper", category: "Stationery" },
+            { name: "BOPP ટેપ / BOPP Tape", category: "Tape" }, 
+            { name: "BOPP બેગ / BOPP Bag", category: "Bags" }, 
+            { name: "LD રોલ / LD Roll", category: "Rolls" },
+            { name: "બોક્સ પટ્ટી / Box Tape", category: "Tape" }, 
+            { name: "ફાઇલ / File", category: "Stationery" }, 
+            { name: "તાલપત્રી / Tadpatri", category: "Other" },
+            { name: "ફોમ રોલ / Foam Roll", category: "Rolls" }, 
+            { name: "પેપર કપ / Paper Cup", category: "Other" }, 
+            { name: "પેપર બેગ / Paper Bag", category: "Bags" }
         ];
+
+        let activeCategory = 'all';
+
+        // Global DOM Elements
+        const container = document.getElementById('dynamicProductContainer');
+        const productGrid = document.getElementById('productGrid');
+        const themeToggle = document.getElementById('themeToggleBtn');
+        const themeIcon = themeToggle ? themeToggle.querySelector('i') : null;
+        const hamburger = document.getElementById('hamburgerBtn');
+        const navMenu = document.getElementById('navMenu');
 
         // Dynamic Copyright Year
         document.getElementById('currentYear').textContent = new Date().getFullYear();
 
         // Custom Toast Notification System
         function showToast(message, type = 'error') {
-            const container = document.getElementById('toastContainer');
-            if (!container) return;
+            const containerEl = document.getElementById('toastContainer');
+            if (!containerEl) return;
             
             const toast = document.createElement('div');
             toast.className = `toast ${type}`;
@@ -667,7 +739,7 @@
             const icon = type === 'success' ? 'fa-circle-check' : 'fa-circle-exclamation';
             toast.innerHTML = `<i class="fa-solid ${icon}" aria-hidden="true"></i> <span>${message}</span>`;
             
-            container.appendChild(toast);
+            containerEl.appendChild(toast);
             
             // Trigger animation
             requestAnimationFrame(() => {
@@ -706,16 +778,17 @@
         }
 
         // Theme Toggle and Persistence Engine
-        const themeToggle = document.getElementById('themeToggleBtn');
-        const themeIcon = themeToggle.querySelector('i');
-        
         function setTheme(isDark) {
             document.documentElement.classList.toggle('dark-mode', isDark);
             document.body.classList.toggle('dark-mode', isDark);
-            themeIcon.className = isDark ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
-            const themeText = themeToggle.querySelector('.theme-text');
-            if (themeText) {
-                themeText.textContent = isDark ? 'Light Mode' : 'Dark Mode';
+            if (themeIcon) {
+                themeIcon.className = isDark ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+            }
+            if (themeToggle) {
+                const themeText = themeToggle.querySelector('.theme-text');
+                if (themeText) {
+                    themeText.textContent = isDark ? 'Light Mode' : 'Dark Mode';
+                }
             }
             localStorage.setItem('theme', isDark ? 'dark' : 'light');
         }
@@ -725,25 +798,28 @@
         const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
         setTheme(savedTheme === 'dark' || (!savedTheme && prefersDark));
         
-        themeToggle.addEventListener('click', () => {
-            setTheme(!document.documentElement.classList.contains('dark-mode'));
-        });
+        if (themeToggle) {
+            themeToggle.addEventListener('click', () => {
+                setTheme(!document.documentElement.classList.contains('dark-mode'));
+            });
+        }
 
         // Mobile Hamburger Drawer Controller
-        const hamburger = document.getElementById('hamburgerBtn');
-        const navMenu = document.getElementById('navMenu');
-        
-        hamburger.addEventListener('click', () => {
-            const isOpened = navMenu.classList.toggle('is-active');
-            hamburger.querySelector('i').className = isOpened ? 'fa-solid fa-xmark' : 'fa-solid fa-bars-staggered';
-        });
+        if (hamburger && navMenu) {
+            hamburger.addEventListener('click', () => {
+                const isOpened = navMenu.classList.toggle('is-active');
+                hamburger.querySelector('i').className = isOpened ? 'fa-solid fa-xmark' : 'fa-solid fa-bars-staggered';
+            });
+        }
         
         // Auto Close Menu on Mobile Anchor Navigation
         document.querySelectorAll('.nav-link').forEach(link => {
             link.addEventListener('click', () => {
-                if(window.innerWidth <= 768) { 
+                if (window.innerWidth <= 768 && navMenu) { 
                     navMenu.classList.remove('is-active'); 
-                    hamburger.querySelector('i').className = 'fa-solid fa-bars-staggered'; 
+                    if (hamburger) {
+                        hamburger.querySelector('i').className = 'fa-solid fa-bars-staggered'; 
+                    }
                 }
             });
         });
@@ -782,34 +858,100 @@
         
         document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
 
-        // Helper to add a form row with predefined product
-        function addFormRowWithProduct(productName) {
-            addFormRow();
+        // Real-time Order Summary Panel Updater
+        function updateQuoteSummary() {
+            const summaryPanel = document.getElementById('quoteSummaryPanel');
+            const uniqueCountEl = document.getElementById('summaryUniqueCount');
+            const totalQtyEl = document.getElementById('summaryTotalQty');
+            if (!container || !summaryPanel || !uniqueCountEl || !totalQtyEl) return;
+            
             const rows = container.querySelectorAll('.dynamic-item');
-            if (rows.length > 0) {
-                const lastRow = rows[rows.length - 1];
-                const selectEl = lastRow.querySelector('.item-select');
-                if (selectEl) {
-                    selectEl.value = productName;
-                    selectEl.dispatchEvent(new Event('change'));
+            let uniqueCount = 0;
+            let totalQty = 0;
+            
+            rows.forEach(row => {
+                const selectEl = row.querySelector('.item-select');
+                const qtyEl = row.querySelector('.item-qty');
+                if (selectEl && selectEl.value) {
+                    uniqueCount++;
+                    const qty = parseInt(qtyEl.value) || 0;
+                    totalQty += qty;
+                }
+            });
+            
+            if (uniqueCount > 0) {
+                summaryPanel.style.display = 'flex';
+                uniqueCountEl.textContent = uniqueCount;
+                totalQtyEl.textContent = totalQty;
+            } else {
+                summaryPanel.style.display = 'none';
+            }
+        }
+
+        // Helper to add a form row with predefined product (or increment if already added)
+        function addFormRowWithProduct(productName) {
+            if (container) {
+                const rows = container.querySelectorAll('.dynamic-item');
+                let foundRow = null;
+                for (let i = 0; i < rows.length; i++) {
+                    const selectEl = rows[i].querySelector('.item-select');
+                    if (selectEl && selectEl.value === productName) {
+                        foundRow = rows[i];
+                        break;
+                    }
+                }
+                
+                if (foundRow) {
+                    const qtyEl = foundRow.querySelector('.item-qty');
+                    if (qtyEl) {
+                        let currentQty = parseInt(qtyEl.value) || 0;
+                        if (currentQty < 9999) {
+                            qtyEl.value = currentQty + 1;
+                            qtyEl.dispatchEvent(new Event('input'));
+                        }
+                    }
+                } else {
+                    addFormRow();
+                    const newRows = container.querySelectorAll('.dynamic-item');
+                    if (newRows.length > 0) {
+                        const lastRow = newRows[newRows.length - 1];
+                        const selectEl = lastRow.querySelector('.item-select');
+                        if (selectEl) {
+                            selectEl.value = productName;
+                            selectEl.dispatchEvent(new Event('change'));
+                        }
+                    }
                 }
             }
         }
 
+        // Safe Regex Escaper
+        function escapeRegExp(string) {
+            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
+
         // Catalog Search & Rendering Engine
-        const productGrid = document.getElementById('productGrid');
-        
         function renderProducts(filterText = '') {
+            if (!productGrid) return;
             productGrid.innerHTML = ''; 
+            
+            // Filter products by category AND search input
+            let filtered = PRODUCTS;
+            if (activeCategory !== 'all') {
+                filtered = filtered.filter(p => p.category === activeCategory);
+            }
+            
             const query = filterText.trim().toLowerCase();
-            const filtered = PRODUCTS.filter(p => p.name.toLowerCase().includes(query));
+            if (query) {
+                filtered = filtered.filter(p => p.name.toLowerCase().includes(query));
+            }
             
             if (filtered.length === 0) {
                 const escapedText = filterText.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
                 productGrid.innerHTML = `
                     <div style="grid-column: 1/-1; text-align: center; color: var(--text-tertiary); padding: 40px 0;">
                         <i class="fa-solid fa-face-frown" style="font-size: 2.5rem; margin-bottom: 12px; color: var(--text-tertiary);"></i>
-                        <p style="font-weight: 600;">No products found matching "${escapedText}".</p>
+                        <p style="font-weight: 600;">No products found matching the criteria.</p>
                     </div>`;
                 return;
             }
@@ -824,12 +966,21 @@
                 const nameGuj = parts[0];
                 const nameEng = parts[1] || '';
                 
+                // Term Highlighting Logic
+                let displayNameGuj = nameGuj;
+                let displayNameEng = nameEng;
+                if (query) {
+                    const regex = new RegExp(`(${escapeRegExp(query)})`, 'gi');
+                    displayNameGuj = nameGuj.replace(regex, '<mark style="background: var(--brand-primary-light); color: var(--brand-accent); border-radius: 4px; padding: 0 2px;">$1</mark>');
+                    displayNameEng = nameEng.replace(regex, '<mark style="background: var(--brand-primary-light); color: var(--brand-accent); border-radius: 4px; padding: 0 2px;">$1</mark>');
+                }
+                
                 card.innerHTML = `
                     <div class="product-icon">
                         <i class="fa-solid fa-cube" aria-hidden="true"></i> 
                     </div>
-                    <h3>${nameGuj}</h3>
-                    <p style="font-size:0.85rem; color:var(--text-tertiary); margin-top:6px; font-weight:600;">${nameEng}</p>
+                    <h3>${displayNameGuj}</h3>
+                    <p style="font-size:0.85rem; color:var(--text-tertiary); margin-top:6px; font-weight:600;">${displayNameEng}</p>
                     <div style="margin-top: 15px; font-size: 0.8rem; font-weight: 700; color: var(--brand-accent); display: flex; align-items: center; justify-content: center; gap: 4px;">
                         Add to Quote <i class="fa-solid fa-circle-plus" aria-hidden="true"></i>
                     </div>`;
@@ -847,17 +998,30 @@
             });
         }
         
-        // Start search listeners
+        // Start search listeners and Category filtering
         renderProducts();
-        document.getElementById('productSearchInput').addEventListener('input', (e) => {
-            renderProducts(e.target.value);
+        
+        const searchInput = document.getElementById('productSearchInput');
+        if (searchInput) {
+            searchInput.addEventListener('input', (e) => {
+                renderProducts(e.target.value);
+            });
+        }
+
+        // Category Pills Click Handlers
+        document.querySelectorAll('.filter-pill').forEach(pill => {
+            pill.addEventListener('click', (e) => {
+                document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+                pill.classList.add('active');
+                activeCategory = pill.getAttribute('data-category');
+                const searchVal = searchInput ? searchInput.value : '';
+                renderProducts(searchVal);
+            });
         });
 
-        // Dynamic Quotation List Builder
-        const container = document.getElementById('dynamicProductContainer');
-        
         // Render a placeholder if there are no items
         function updatePlaceholder() {
+            if (!container) return;
             const rows = container.querySelectorAll('.dynamic-item');
             const placeholderId = 'quoteEmptyPlaceholder';
             let placeholder = document.getElementById(placeholderId);
@@ -879,9 +1043,12 @@
                     placeholder.remove();
                 }
             }
+            updateQuoteSummary();
         }
         
         function addFormRow() {
+            if (!container) return;
+
             // Remove placeholder first if it exists
             const placeholder = document.getElementById('quoteEmptyPlaceholder');
             if (placeholder) {
@@ -927,6 +1094,7 @@
                     e.target.value = 9999;
                     showToast("Maximum quantity is 9999 items per product.", "error");
                 }
+                updateQuoteSummary();
             });
             
             qtyInput.addEventListener('blur', e => {
@@ -936,6 +1104,7 @@
                 } else if (val > 9999) {
                     e.target.value = 9999;
                 }
+                updateQuoteSummary();
             });
 
             // Select focus visual label handler
@@ -949,26 +1118,34 @@
                     selectLabel.style.fontWeight = "700";
                     selectEl.classList.remove('error-border');
                 }
+                updateQuoteSummary();
             });
 
-            // Programmatic row deletion (replaces inline event listeners for maximum stability)
+            // Programmatic row deletion
             row.querySelector('.btn-remove').addEventListener('click', () => {
                 row.remove();
                 updatePlaceholder();
+                updateQuoteSummary();
             });
             
             container.appendChild(row);
             applyButtonRipples();
+            updateQuoteSummary();
         }
 
         // Form Row Trigger Handlers
-        document.getElementById('addFormRowBtn').addEventListener('click', addFormRow);
-        document.getElementById('getQuoteBtn').addEventListener('click', generateQuote);
+        const addRowBtn = document.getElementById('addFormRowBtn');
+        if (addRowBtn) addRowBtn.addEventListener('click', addFormRow);
+        
+        const getQuoteBtn = document.getElementById('getQuoteBtn');
+        if (getQuoteBtn) getQuoteBtn.addEventListener('click', generateQuote);
 
-        // Sanitize and Validate Mobile
+        // Sanitize and Validate Mobile (with country code pasting support)
         function sanitizeAndValidatePhone(number) {
             const clean = number.replace(/\D/g, "");
-            return clean.length === 10 ? clean : null;
+            if (clean.length === 10) return clean;
+            if (clean.length === 12 && clean.startsWith("91")) return clean.slice(2);
+            return null;
         }
 
         // WhatsApp Quotation Compiler
@@ -997,6 +1174,7 @@
                 showToast("Please enter a valid 10-digit mobile number.");
             }
             
+            if (!container) return;
             const rows = container.querySelectorAll('.dynamic-item');
             if (rows.length === 0) {
                 showToast("Please add at least one item to order.");
@@ -1051,65 +1229,113 @@
 
         // Contact Message submission
         const contactForm = document.getElementById('contactForm');
-        contactForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const nameEl = document.getElementById('contactName');
-            const mobileEl = document.getElementById('contactMobile');
-            const emailEl = document.getElementById('contactEmail');
-            const messageEl = document.getElementById('contactMessage');
-            
-            nameEl.classList.remove('error-border');
-            mobileEl.classList.remove('error-border');
-            messageEl.classList.remove('error-border');
-            
-            const name = nameEl.value.trim();
-            const mobileClean = sanitizeAndValidatePhone(mobileEl.value.trim());
-            const email = emailEl.value.trim();
-            const msg = messageEl.value.trim();
-            
-            let isFormValid = true;
-            
-            if (!name) {
-                nameEl.classList.add('error-border');
-                isFormValid = false;
-            }
-            if (!mobileClean) {
-                mobileEl.classList.add('error-border');
-                showToast("Please enter a valid 10-digit mobile number.");
-                isFormValid = false;
-            }
-            if (!msg) {
-                messageEl.classList.add('error-border');
-                isFormValid = false;
-            }
-            
-            if (!isFormValid) return;
-            
-            const formattedText = `📩 *NEW INQUIRY*\n=========================\n\n👤 *Sender:*\n• *Name:* ${name}\n• *Mobile:* ${mobileClean}\n${email ? `• *Email:* ${email}\n` : ''}\n💬 *Message:*\n"${msg}"\n\n🌐 _Sahaj Enterprise Portal_`;
-            
-            showToast("Opening WhatsApp...", "success");
-            window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(formattedText)}`, '_blank', 'noopener,noreferrer');
-            
-            contactForm.reset();
-        });
+        if (contactForm) {
+            contactForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const nameEl = document.getElementById('contactName');
+                const mobileEl = document.getElementById('contactMobile');
+                const emailEl = document.getElementById('contactEmail');
+                const messageEl = document.getElementById('contactMessage');
+                
+                nameEl.classList.remove('error-border');
+                mobileEl.classList.remove('error-border');
+                messageEl.classList.remove('error-border');
+                
+                const name = nameEl.value.trim();
+                const mobileClean = sanitizeAndValidatePhone(mobileEl.value.trim());
+                const email = emailEl.value.trim();
+                const msg = messageEl.value.trim();
+                
+                let isFormValid = true;
+                
+                if (!name) {
+                    nameEl.classList.add('error-border');
+                    isFormValid = false;
+                }
+                if (!mobileClean) {
+                    mobileEl.classList.add('error-border');
+                    showToast("Please enter a valid 10-digit mobile number.");
+                    isFormValid = false;
+                }
+                if (!msg) {
+                    messageEl.classList.add('error-border');
+                    isFormValid = false;
+                }
+                
+                if (!isFormValid) return;
+                
+                const formattedText = `📩 *NEW INQUIRY*\n=========================\n\n👤 *Sender:*\n• *Name:* ${name}\n• *Mobile:* ${mobileClean}\n${email ? `• *Email:* ${email}\n` : ''}\n💬 *Message:*\n"${msg}"\n\n🌐 _Sahaj Enterprise Portal_`;
+                
+                showToast("Opening WhatsApp...", "success");
+                window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(formattedText)}`, '_blank', 'noopener,noreferrer');
+                
+                contactForm.reset();
+            });
+        }
 
         // Close mobile drawer when clicking outside
         document.addEventListener('click', (e) => {
-            if (window.innerWidth <= 768 && navMenu.classList.contains('is-active')) {
+            if (window.innerWidth <= 768 && navMenu && navMenu.classList.contains('is-active')) {
                 if (!navMenu.contains(e.target) && !hamburger.contains(e.target)) {
                     navMenu.classList.remove('is-active');
-                    hamburger.querySelector('i').className = 'fa-solid fa-bars-staggered';
+                    if (hamburger) {
+                        hamburger.querySelector('i').className = 'fa-solid fa-bars-staggered';
+                    }
                 }
             }
         });
 
-        // Initialize Applet elements
-        window.addEventListener('DOMContentLoaded', () => {
-            // Render the empty placeholder for pristine initial UX as requested by the user
+        // Stats Count-Up Animation
+        function animateStats() {
+            const statsSection = document.querySelector('.stats-row');
+            if (!statsSection) return;
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const numbers = entry.target.querySelectorAll('.stat-number');
+                        numbers.forEach(num => {
+                            const target = parseInt(num.getAttribute('data-target'));
+                            const duration = 1500; // ms
+                            const startTime = performance.now();
+                            
+                            function updateCount(currentTime) {
+                                const elapsedTime = currentTime - startTime;
+                                if (elapsedTime >= duration) {
+                                    num.textContent = target + "+";
+                                } else {
+                                    const progress = elapsedTime / duration;
+                                    // easeOutQuad curve
+                                    const easeProgress = progress * (2 - progress);
+                                    const currentCount = Math.floor(easeProgress * target);
+                                    num.textContent = currentCount + "+";
+                                    requestAnimationFrame(updateCount);
+                                }
+                            }
+                            
+                            requestAnimationFrame(updateCount);
+                        });
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1 });
+            
+            observer.observe(statsSection);
+        }
+
+        // Initialize Applet elements safely
+        function initApp() {
             updatePlaceholder();
             applyButtonRipples();
-        });
+            animateStats();
+        }
+
+        if (document.readyState === 'loading') {
+            window.addEventListener('DOMContentLoaded', initApp);
+        } else {
+            initApp();
+        }
     </script>
 </body>
 </html>
