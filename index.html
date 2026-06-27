@@ -329,8 +329,9 @@
                                 id="mobileNumber"
                                 required
                                 maxLength="10"
+                                inputmode="numeric"
                                 pattern="[0-9]{10}"
-                                placeholder="e.g., 9979950667"
+                                placeholder="e.g., 9016655358"
                                 class="w-full px-4 py-3 border border-slate-200 dark:border-slate-800 rounded-xl bg-white dark:bg-slate-900 text-slate-900 dark:text-white outline-none focus:border-amber-500 dark:focus:border-amber-400 focus:ring-4 focus:ring-amber-500/10 dark:focus:ring-amber-400/10 transition-all text-sm shadow-sm font-mono"
                             />
                         </div>
@@ -438,8 +439,9 @@
                                 id="contactMobile"
                                 required
                                 maxLength="10"
+                                inputmode="numeric"
                                 pattern="[0-9]{10}"
-                                placeholder="e.g., 9979950667"
+                                placeholder="e.g., 9016655358"
                                 class="w-full px-4 py-3 border border-slate-200 dark:border-slate-800 rounded-xl bg-white dark:bg-slate-950 text-slate-900 dark:text-white outline-none focus:border-amber-500 dark:focus:border-amber-400 focus:ring-4 focus:ring-amber-500/10 dark:focus:ring-amber-400/10 transition-all text-sm shadow-sm font-mono"
                             />
                         </div>
@@ -522,6 +524,10 @@
                             <span>Krishna Complex, GIDC Metoda, <br>Rajkot, Gujarat, India</span>
                         </li>
                         <li class="flex items-center gap-3">
+                            <i class="fa-brands fa-whatsapp text-amber-500"></i>
+                            <span>Official WhatsApp Support:<br><a href="https://wa.me/919016655358" target="_blank" class="hover:text-amber-400 transition-colors font-bold text-slate-200">+91 90166 55358</a></span>
+                        </li>
+                        <li class="flex items-center gap-3">
                             <i class="fa-solid fa-phone text-amber-500"></i>
                             <span>Paresh: +91 99799 50667</span>
                         </li>
@@ -531,7 +537,7 @@
                         </li>
                     </ul>
 
-                    <!-- Moved Catalog Download to Footer -->
+                    <!-- Catalog Download -->
                     <div class="pt-2">
                         <button
                             id="downloadCatalogBtn"
@@ -609,7 +615,6 @@
                         <span class="block text-xs font-bold uppercase text-slate-400 dark:text-slate-500 tracking-wider">Wholesale Quantity</span>
                         <div class="flex items-center gap-2">
                             <button id="modalQtyMinusBtn" class="w-9 h-9 border border-slate-200 dark:border-slate-800 rounded-lg flex items-center justify-center text-slate-500 hover:text-amber-500 font-bold bg-white dark:bg-slate-900 cursor-pointer">-</button>
-                            <!-- Default quantity is now strictly 1 -->
                             <input id="modalQtyInput" type="number" min="1" max="9999" value="1" class="w-16 text-center border border-slate-200 dark:border-slate-800 rounded-lg bg-white dark:bg-slate-900 text-slate-950 dark:text-white font-semibold font-mono p-1">
                             <button id="modalQtyPlusBtn" class="w-9 h-9 border border-slate-200 dark:border-slate-800 rounded-lg flex items-center justify-center text-slate-500 hover:text-amber-500 font-bold bg-white dark:bg-slate-900 cursor-pointer">+</button>
                         </div>
@@ -1177,7 +1182,7 @@
                         <i class="fa-solid fa-cart-shopping text-slate-300 dark:text-slate-600 text-3xl mb-3 animate-pulse"></i>
                         <h4 class="text-sm font-bold text-slate-900 dark:text-white font-display">Your quotation list is empty</h4>
                         <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-xs leading-relaxed">
-                            Click on any product card specifications in the catalog above to add specs to your quotation list.
+                            Click on any product card specifications in the catalog above to add specs to your quotation list, or click "Add Product Item" below.
                         </p>
                     </div>
                 `;
@@ -1189,11 +1194,15 @@
 
             // Calculate Totals
             let totalQty = 0;
+            let uniqueSelectedCount = 0;
             quoteItems.forEach(item => {
                 totalQty += item.quantity;
+                if (item.productName !== "") {
+                    uniqueSelectedCount++;
+                }
             });
 
-            document.getElementById("summaryUniqueCount").textContent = quoteItems.length;
+            document.getElementById("summaryUniqueCount").textContent = uniqueSelectedCount;
             document.getElementById("summaryTotalQty").textContent = totalQty;
 
             // Render Rows
@@ -1202,7 +1211,8 @@
                 row.className = "flex flex-col sm:flex-row gap-3 p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl items-center shadow-sm relative group";
 
                 // Product Dropdown options builder
-                let selectOptions = "";
+                // Starts with a disabled placeholder if not yet selected by the user
+                let selectOptions = `<option value="" disabled ${item.productName === "" ? "selected" : ""}>-- Select Product / પ્રોડક્ટ પસંદ કરો --</option>`;
                 PRODUCTS.forEach(p => {
                     const isSelected = p.name === item.productName ? "selected" : "";
                     selectOptions += `<option value="${p.name}" ${isSelected}>${p.name}</option>`;
@@ -1250,7 +1260,6 @@
                     }
                     item.quantity = val;
                     qtyInputEl.value = val;
-                    // update totals without fully re-rendering the list immediately (saves focus)
                     updateTotalsOnly();
                 });
 
@@ -1286,22 +1295,23 @@
 
         function updateTotalsOnly() {
             let totalQty = 0;
+            let uniqueSelectedCount = 0;
             quoteItems.forEach(item => {
                 totalQty += item.quantity;
+                if (item.productName !== "") {
+                    uniqueSelectedCount++;
+                }
             });
+            document.getElementById("summaryUniqueCount").textContent = uniqueSelectedCount;
             document.getElementById("summaryTotalQty").textContent = totalQty;
         }
 
         // Add Product Line Row button
         document.getElementById("addFormRowBtn").addEventListener("click", () => {
-            // Pick a product that is not already chosen, or pick the first one
-            const usedNames = quoteItems.map(qi => qi.productName);
-            const available = PRODUCTS.find(p => !usedNames.includes(p.name)) || PRODUCTS[0];
-
-            // Add dynamic row starting with a default quantity of 1 (strictly requested)
+            // Push an item with empty string as productName so that the user is forced to select a product
             quoteItems.push({
                 id: Date.now().toString() + Math.random().toString(36).substr(2, 5),
-                productName: available.name,
+                productName: "", // Starts with unselected product (placeholder)
                 quantity: 1
             });
 
@@ -1336,6 +1346,13 @@
 
             if (quoteItems.length === 0) {
                 showToast("Please add at least one packaging item to request a quote", "error");
+                return;
+            }
+
+            // CHECK VALIDATION: Do not allow submission if any product remains unselected
+            const hasUnselected = quoteItems.some(item => item.productName === "");
+            if (hasUnselected) {
+                showToast("Please select a product for all items in your list before submitting!", "error");
                 return;
             }
 
@@ -1391,7 +1408,36 @@
         });
 
 
-        // --- 12. HIGH-QUALITY CLIENT-SIDE PDF GENERATOR ---
+        // --- 12. MOBILE NUMBER NUMERIC ONLY EXCLUSIONS ---
+        function setupNumericOnlyMobileFields() {
+            const fields = ["mobileNumber", "contactMobile"];
+            fields.forEach(id => {
+                const input = document.getElementById(id);
+                if (input) {
+                    // Filter input text reactively on typing
+                    input.addEventListener("input", (e) => {
+                        e.target.value = e.target.value.replace(/[^0-9]/g, '');
+                    });
+                    // Keydown validation to prevent non-digit inputs
+                    input.addEventListener("keydown", (e) => {
+                        if (
+                            e.key !== "Backspace" &&
+                            e.key !== "Delete" &&
+                            e.key !== "ArrowLeft" &&
+                            e.key !== "ArrowRight" &&
+                            e.key !== "Tab" &&
+                            e.key !== "Enter" &&
+                            !/[0-9]/.test(e.key)
+                        ) {
+                            e.preventDefault();
+                        }
+                    });
+                }
+            });
+        }
+
+
+        // --- 13. HIGH-QUALITY CLIENT-SIDE PDF GENERATOR ---
         function generatePDFCatalog() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
@@ -1411,7 +1457,7 @@
             doc.setTextColor(100, 116, 139); // slate-500
             doc.text("Premium Industrial Plastics & Packaging Solutions", 14, 30);
             doc.text("Krishna Complex, GIDC Metoda, Rajkot, Gujarat, India", 14, 35);
-            doc.text("Mobile: +91 99799 50667, +91 95862 70971 | Email: info.sahajenterprise@gmail.com", 14, 40);
+            doc.text("Mobile / WhatsApp: +91 90166 55358 | Email: info.sahajenterprise@gmail.com", 14, 40);
             
             // Separator thin line
             doc.setDrawColor(226, 232, 240);
@@ -1529,11 +1575,12 @@
         // Set Current copyright year
         document.getElementById("currentYear").textContent = new Date().getFullYear();
 
-        // --- 13. BOOTSTRAP INITIALIZATION ---
+        // --- 14. BOOTSTRAP INITIALIZATION ---
         function bootstrap() {
             initTheme();
             renderProducts();
             renderQuoteItems();
+            setupNumericOnlyMobileFields();
         }
 
         bootstrap();
